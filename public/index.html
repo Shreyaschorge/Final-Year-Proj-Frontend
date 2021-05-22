@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <script
+      src="https://kit.fontawesome.com/b7d0c04ce4.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+
+    <script src="/webrtc-adapter/release/adapter.js"></script>
+    <script src="/kurento-client/js/kurento-client.js"></script>
+
+    <script src="/kurento-utils/js/kurento-utils.js"></script>
+
+    <title>Examli Test Page</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+
+    <script>
+      var name = "";
+      function getopts(args, opts) {
+        var result = opts.default || {};
+        args.replace(
+          new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+          function ($0, $1, $2, $3) {
+            result[$1] = decodeURI($3);
+          }
+        );
+
+        return result;
+      }
+
+      var args = getopts(location.search, {
+        default: {
+          // Non-secure WebSocket
+          // Only valid for localhost access! Browsers won't allow using this for
+          // URLs that are not localhost. Also, this matches the default KMS config:
+          ws_uri: "ws://" + "104.248.14.148" + ":8888/kurento",
+          // Secure WebSocket
+          // Valid for localhost and remote access. To use this, you have to edit the
+          // KMS settings file "kurento.conf.json", and configure the section
+          // "mediaServer.net.websocket.secure". Check the docs:
+          // https://doc-kurento.readthedocs.io/en/latest/features/security.html#features-security-kms-wss
+          ws_uri: "wss://kurentoserver.examli.com:8433/kurento",
+          //ws_uri: "wss://websocket.examli.com:8001/mqtt",
+
+          file_uri: `file:///tmp/1.webm`, // file to be stored in media server
+          ice_servers: undefined,
+        },
+      });
+
+      function setIceCandidateCallbacks(webRtcPeer, webRtcEp, onerror) {
+        webRtcPeer.on("icecandidate", function (candidate) {
+          console.log("Local candidate:", candidate);
+
+          candidate = kurentoClient.getComplexType("IceCandidate")(candidate);
+
+          webRtcEp.addIceCandidate(candidate, onerror);
+        });
+
+        webRtcEp.on("IceCandidateFound", function (event) {
+          var candidate = event.candidate;
+
+          console.log("Remote candidate:", candidate);
+
+          webRtcPeer.addIceCandidate(candidate, onerror);
+        });
+      }
+
+      window.addEventListener("load", function (event) {
+        var startRecordButton = document.getElementById("startTest2");
+        startRecordButton.addEventListener("click", startRecording);
+      });
+
+      function startRecording() {
+        name = document.getElementById("file_uri").value;
+        args.file_uri = `file:///examli_recordings/${name}.webm`;
+        console.log("onClick -------------------", args.file_uri);
+
+        var videoInput = document.getElementById("videoInput");
+        var videoOutput = document.getElementById("videoInput");
+
+        showSpinner(videoInput, videoOutput);
+
+        var stopRecordButton = document.getElementById("endTest");
+
+        var options = {
+          localVideo: videoInput,
+          remoteVideo: videoOutput,
+        };
+
+        if (args.ice_servers) {
+          console.log("Use ICE servers: " + args.ice_servers);
+          options.configuration = {
+            iceServers: JSON.parse(args.ice_servers),
+          };
+        } else {
+          console.log("Use freeice");
+        }
+
+        webRtcPeer = kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(
+          options,
+          function (error) {
+            if (error) return onError(error);
+
+            this.generateOffer(onOffer);
+          }
+        );
+
+        function onOffer(error, offer) {
+          if (error) return onError(error);
+
+          console.log("Offer...");
+
+          kurentoClient(args.ws_uri, function (error, client) {
+            if (error) return onError(error);
+
+            client.create("MediaPipeline", function (error, pipeline) {
+              if (error) return onError(error);
+
+              console.log("Got MediaPipeline");
+
+              var elements = [
+                { type: "RecorderEndpoint", params: { uri: args.file_uri } },
+                { type: "WebRtcEndpoint", params: {} },
+              ];
+
+              pipeline.create(elements, function (error, elements) {
+                if (error) return onError(error);
+
+                var recorder = elements[0];
+                var webRtc = elements[1];
+
+                setIceCandidateCallbacks(webRtcPeer, webRtc, onError);
+
+                webRtc.processOffer(offer, function (error, answer) {
+                  if (error) return onError(error);
+
+                  console.log("offer");
+
+                  webRtc.gatherCandidates(onError);
+                  webRtcPeer.processAnswer(answer);
+                });
+
+                client.connect(webRtc, webRtc, function (error) {
+                  if (error) {
+                    return onError(error);
+                  }
+
+                  client.connect(webRtc, recorder, function (error) {
+                    console.log("Connected");
+
+                    recorder.record(function (error) {
+                      if (error) return onError(error);
+
+                      console.log("record");
+                      document.getElementById("videoFeed").value = "true";
+
+                      stopRecordButton.addEventListener(
+                        "click",
+                        function (event) {
+                          console.log("stop");
+                          recorder.stop();
+                          pipeline.release();
+                          webRtcPeer.dispose();
+                          videoInput.src = "";
+                          videoOutput.src = "";
+
+                          //hideSpinner(videoInput, videoOutput);
+
+                          //   var playButton = document.getElementById("play");
+                          //   playButton.addEventListener("click", startPlaying);
+                          // });
+                        }
+                      );
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+
+        function onError(error) {
+          if (error) console.log(error);
+          document.getElementById("videoFeed").value = "false";
+        }
+
+        function showSpinner() {
+          for (var i = 0; i < arguments.length; i++) {}
+        }
+
+        function hideSpinner() {
+          for (var i = 0; i < arguments.length; i++) {
+            arguments[i].src = "";
+            arguments[i].poster = "img/webrtc.png";
+            arguments[i].style.background = "";
+          }
+        }
+
+        /**
+         * Lightbox utility (to display media pipeline image in a modal dialog)
+         */
+      }
+    </script>
+  </body>
+</html>
