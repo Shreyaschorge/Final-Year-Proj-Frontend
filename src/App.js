@@ -19,6 +19,9 @@ import Docs from './components/pages/Docs'
 import Doc from './components/pages/Doc'
 import Login from "./components/pages/Login";
 import Upload from "./components/pages/Upload";
+import Annotate from "./components/pages/Annotate";
+import Contributions from "./components/pages/Contributions";
+import Contribution from "./components/pages/Contribution";
 // import Settings from "./components/pages/Settings";
 function App() {
   if (localStorage.jwtToken) {
@@ -40,8 +43,9 @@ function App() {
           <PrivateRoute exact path='/dashboard' component={Docs} />
           <PrivateRoute exact path='/fetch/:id' component={Doc} />
           <PrivateRoute exact path='/upload' component={Upload} />
-          {/* <PrivateRoute exact path='/document/:id' component={Result} />
-          <PrivateRoute exact path='/settings' component={Settings} /> */}
+          <PrivateRoute exact path='/annotate' component={Annotate} />
+          <PrivateRoute exact path='/contributions' component={Contributions} />
+          <PrivateRoute exact path='/contribution/:id' component={Contribution} />
         </Switch>
       </div>
     </Router>

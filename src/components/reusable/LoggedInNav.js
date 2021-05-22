@@ -93,9 +93,14 @@ const LoggedInLayout = ({ children, logoutUser, auth }) => {
         <Content style={{ display: "flex", justifyContent: "center" }}>
           {children}
         </Content>
-        <Footer style={{ alignSelf: "center" }}>
-          ©Possibillion Software Technologies, {new Date().getFullYear()}
-        </Footer>
+        <Footer style={{ alignSelf: "center", textAlign:"center" }}>
+        Made with &#x1F9E0; by <br />
+         Sujoy Dev, Priya Naik, Rashmi Shetty
+        <br />
+        Information Technology Dept.
+        <br/>
+        A. P. Shah Institute Of Technology 
+      </Footer>
       </Layout>
     </Layout>
   );

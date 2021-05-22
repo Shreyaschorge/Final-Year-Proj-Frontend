@@ -21,7 +21,7 @@ const NavItems = [
   },
   {
     name: "Annotate",
-    path: "/",
+    path: "/annotate",
     logo: <SettingFilled />,
   },
   {

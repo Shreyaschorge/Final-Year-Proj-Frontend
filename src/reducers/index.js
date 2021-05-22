@@ -4,6 +4,7 @@ import errorReducer from "./errorReducer";
 import docReducer from "./docReducer";
 import loadingReducer from "./loadingReducer";
 import extractReducer from "./extractReducer";
+import contributionReducer from "./contributionReducer";
 
 export default combineReducers({
   auth: authReducer,
@@ -11,4 +12,5 @@ export default combineReducers({
   loading: loadingReducer,
   doc: docReducer,
   content: extractReducer,
+  contribution:contributionReducer
 });
