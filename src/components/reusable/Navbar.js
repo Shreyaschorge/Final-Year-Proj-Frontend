@@ -1,18 +1,18 @@
 import React from "react";
 import { Link, useRouteMatch } from "react-router-dom";
 import { Menu } from "antd";
-import { HomeFilled, SettingFilled, FileTextFilled  } from "@ant-design/icons";
+import { DashboardOutlined, AlignCenterOutlined, FileTextFilled,PicLeftOutlined,RadarChartOutlined  } from "@ant-design/icons";
 
 const NavItems = [
   {
     name: "Overview",
     path: "/overview",
-    logo: <HomeFilled />,
+    logo: <RadarChartOutlined />,
   },
   {
     name: "Dashboard",
     path: "/dashboard",
-    logo: <HomeFilled />,
+    logo: <DashboardOutlined />,
   },
   {
     name: "Upload",
@@ -22,12 +22,12 @@ const NavItems = [
   {
     name: "Annotate",
     path: "/annotate",
-    logo: <SettingFilled />,
+    logo: <PicLeftOutlined />,
   },
   {
     name: "Conntributions",
     path: "/contributions",
-    logo: <SettingFilled />,
+    logo: <AlignCenterOutlined />,
   },
  
 ];

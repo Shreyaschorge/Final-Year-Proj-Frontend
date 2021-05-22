@@ -151,3 +151,10 @@ table {
   justify-content: center;
   align-items: center;
 }
+
+.ant-table-cell{
+  font-weight: bold!important;
+}
+.object-key-val{
+  font-weight: bold!important;
+}
