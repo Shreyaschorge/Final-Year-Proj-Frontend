@@ -8,14 +8,15 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
 import LoginLayout from "../reusable/loginNav";
-import { loginUser } from "../../actions/authActions";
-import loginValidation from "../../validation/loginValidation";
-const Login = ({ loginUser, error, history, auth }) => {
+import { registerUser } from "../../actions/authActions";
+import registerValidation from "../../validation/registerValidation";
+const Register = ({ registerUser, error, history, auth }) => {
   const [errors, setErrors] = useState({});
 
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
+    confirmPassword:""
   });
   useEffect(() => {
     if (error.data) message.error(error.data.message);
@@ -33,11 +34,11 @@ const Login = ({ loginUser, error, history, auth }) => {
   };
 
   const click = async () => {
-    let { errors, isValid } = await loginValidation(credentials);
+    let { errors, isValid } = await registerValidation(credentials);
     console.log(isValid);
     if (isValid) {
       setErrors({});
-      loginUser(credentials, history);
+      registerUser(credentials, history);
     } else {
       setErrors(errors);
       console.log(errors);
@@ -98,6 +99,26 @@ const Login = ({ loginUser, error, history, auth }) => {
               placeholder='Password'
             />
           </Form.Item>
+          <Form.Item
+            name='confirmPassword'
+            hasFeedback
+            rules={[
+              {
+                required: true,
+                message: errors.confirmPassword,
+              },
+            ]}
+            help={errors.confirmPassword}
+            validateStatus={!errors.confirmPassword ? "success" : "error"}
+          >
+            <Input.Password
+              onChange={onChange}
+              id='confirmPassword'
+              value={credentials.confirmPassword}
+              prefix={<LockOutlined className='site-form-item-icon' />}
+              placeholder='Confirm Password'
+            />
+          </Form.Item>
           <br />
           <br />
 
@@ -109,10 +130,10 @@ const Login = ({ loginUser, error, history, auth }) => {
                 className='login-form-button'
                 onClick={click}
               >
-                Log in
-              </Button>
-              <Link className='login-form-forgot' to='/register'>
                 Register
+              </Button>
+              <Link className='login-form-forgot' to='/'>
+                Login Instead
               </Link>
             </div>
           </Form.Item>
@@ -122,8 +143,8 @@ const Login = ({ loginUser, error, history, auth }) => {
   );
 };
 
-Login.propTypes = {
-  loginUser: PropTypes.func.isRequired,
+Register.propTypes = {
+  registerUser: PropTypes.func.isRequired,
 };
 const mapStateToProps = (state) => ({
   auth: state.auth,
@@ -131,5 +152,5 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  loginUser,
-})(withRouter(Login));
+  registerUser,
+})(withRouter(Register));

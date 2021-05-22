@@ -42,3 +42,22 @@ export const logoutUser = () => (dispatch) => {
   dispatch(setCurrentUser({}));
   window.location.href = "/";
 };
+
+
+export const registerUser = (userData, history) => (dispatch) => {
+  axios
+    .post("http://localhost:5000/register", userData)
+    .then((res) => {
+      dispatch({
+        type: CLEAR_ERRORS,
+      });
+      history.push("/");
+    })
+    .catch((err) =>{
+    console.log(err);
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response,
+      })}
+    );
+};

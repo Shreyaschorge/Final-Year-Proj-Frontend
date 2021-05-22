@@ -8,13 +8,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { setCurrentUser, logoutUser } from "./actions/authActions";
 
 import setAuthToken from "./utils/setAuthToken";
-// import Navbar from "./components/reusable/Navbar";
 import PrivateRoute from "./components/reusable/PrivateRoute";
-// import PrivateRoute2 from "./components/reusable/PrivateRoute2";
-// import Test from "./components/pages/Test";
-// import Tests from "./components/pages/Tests";
-// import Results from "./components/pages/Results";
-// import Result from "./components/pages/Result";
 import Docs from './components/pages/Docs'
 import Doc from './components/pages/Doc'
 import Login from "./components/pages/Login";
@@ -23,6 +17,7 @@ import Annotate from "./components/pages/Annotate";
 import Contributions from "./components/pages/Contributions";
 import Contribution from "./components/pages/Contribution";
 import Overview from "./components/pages/Overview";
+import Register from "./components/pages/Register";
 // import Settings from "./components/pages/Settings";
 function App() {
   if (localStorage.jwtToken) {
@@ -40,6 +35,7 @@ function App() {
     <Router>
       <div className='App'>
         <Route exact path='/' component={Login} />
+        <Route exact path='/register' component={Register} />
         <Switch>
           <PrivateRoute exact path='/dashboard' component={Docs} />
           <PrivateRoute exact path='/fetch/:id' component={Doc} />
