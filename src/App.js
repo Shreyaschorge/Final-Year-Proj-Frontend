@@ -22,6 +22,7 @@ import Upload from "./components/pages/Upload";
 import Annotate from "./components/pages/Annotate";
 import Contributions from "./components/pages/Contributions";
 import Contribution from "./components/pages/Contribution";
+import Overview from "./components/pages/Overview";
 // import Settings from "./components/pages/Settings";
 function App() {
   if (localStorage.jwtToken) {
@@ -46,6 +47,7 @@ function App() {
           <PrivateRoute exact path='/annotate' component={Annotate} />
           <PrivateRoute exact path='/contributions' component={Contributions} />
           <PrivateRoute exact path='/contribution/:id' component={Contribution} />
+          <PrivateRoute exact path='/overview' component={Overview} />
         </Switch>
       </div>
     </Router>

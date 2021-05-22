@@ -15,6 +15,7 @@ const Overview = ({ getOverview, error, loading, auth, overview }) => {
     if (error.data) message.error(error.data.message);
   }, [error]);
   useEffect(() => {
+    
     let arr = []
     if(overview.totalUploadExtractions){
     arr.push(overview.totalUploadExtractions);
@@ -23,7 +24,7 @@ const Overview = ({ getOverview, error, loading, auth, overview }) => {
     // arr.push(overview.contributionApproved);
     setSeries(arr);
     console.log(arr);}
-  }, [overview.contributionUnapproved]);
+  }, [overview]);
   const [series, setSeries] = useState([]);
   const [options, setOptions] = useState({});
   return (
@@ -104,7 +105,7 @@ Overview.propTypes = {
 const mapStateToProps = (state) => ({
   auth: state.auth,
   error: state.error,
-  overview: state.overview,
+  overview: state.overview.overview,
   loading: state.loading,
 });
 

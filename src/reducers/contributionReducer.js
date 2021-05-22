@@ -27,7 +27,7 @@ export default function (state = initialState, action) {
         _id: action.payload._id["$oid"],
           fileName: action.payload.fileName,
           annotation: action.payload.retrainObject.annotation,
-          content:action.payload.retrainObject.annotation
+          content:action.payload.retrainObject.content
       }
       return {
         ...state,

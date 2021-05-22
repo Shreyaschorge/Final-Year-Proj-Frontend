@@ -36,6 +36,7 @@ const Doc = ({ getContribution, error, contribution, loading, auth }) => {
           <Card className="customCard">
             <ReactJson src={contribution.annotation} />
           </Card>
+         
           <br />
         </Col>
       </Row>
