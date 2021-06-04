@@ -5,22 +5,22 @@ pipeline{
     stages{
         stage('install dependencies'){  
             steps{
-                sh 'npm i -g'
+                bat 'npm i -g'
             } 
         }
         stage('build app'){
             steps{
-            sh 'npm run build'               
+            bat 'npm run build'               
             }           
         }
          stage('delete prev'){
             steps{
-                sh 'ssh root@domain.com rm -r ../../var/www/html/domain.com/*'               
+                bat 'ssh root@domain.com rm -r ../../var/www/html/domain.com/*'               
             }     
          } 
         stage('move build folder'){
             steps{
-                sh 'rsync -pav ./build/* root@domain.com:../../var/www/html/domain.com'              
+                bat 'rsync -pav ./build/* root@domain.com:../../var/www/html/domain.com'              
             }           
         } 
     }
